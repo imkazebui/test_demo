@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+      
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+           
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="container" ng-controller="gamesController" ng-cloak>
+      <h1>Game Arena</h1>
+
+      <div class="row">
+        <div class="col-6">
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search a game by using the name of the game"
+              aria-label="Search game"
+              aria-describedby="search"
+              ng-change="onChangeSearch()"
+              ng-model="search"
+            />
+            <div class="input-group-append">
+              <span class="input-group-text" id="search"
+                ><i class="fas fa-search"></i
+              ></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="row">
+            <div class="col-6">
+              <select
+                class="custom-select"
+                ng-model="sortValue"
+                ng-change="onChangeSort()"
+              >
+                <option ng-repeat="opt in sortOptions" value="{{opt.value}}">
+                  {{opt.label}}
+                </option>
+              </select>
+            </div>
+            <div class="col-6">
+              <select
+                class="custom-select"
+                ng-model="filterValue"
+                ng-change="onChangeFilter()"
+              >
+                <option
+                  ng-repeat="fopt in filterOptions"
+                  value="{{fopt.value}}"
+                >
+                  {{fopt.label}}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div
+          class="col-sm-12 col-md-6 col-lg-4 col-el-3"
+          ng-repeat="game in games"
+        >
+          <div class="card">
+            <img src="" class="card-img-top" />
+            <div class="card-body">
+              <h5 class="card-title">{{game.title}}</h5>
+
+              <p class="card-tex"><span>Platform: </span>{{game.platform}}</p>
+
+              <p class="card-tex"><span>Genre: </span>{{game.genre}}</p>
+
+              <p class="card-tex"><span>Score: </span>{{game.score}}</p>
+              <p class="card-tex" ng-if='game.editors_choice == "Y"'>
+                Editors choice
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.6/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+         
+  </body>
+</html>
