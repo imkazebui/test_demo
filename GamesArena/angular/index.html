@@ -26,7 +26,7 @@
               placeholder="Search a game by using the name of the game"
               aria-label="Search game"
               aria-describedby="search"
-              ng-change="onChangeSearch()"
+              ng-change="onChange()"
               ng-model="search"
             />
             <div class="input-group-append">
@@ -42,7 +42,7 @@
               <select
                 class="custom-select"
                 ng-model="sortValue"
-                ng-change="onChangeSort()"
+                ng-change="onChange()"
               >
                 <option ng-repeat="opt in sortOptions" value="{{opt.value}}">
                   {{opt.label}}
@@ -53,7 +53,7 @@
               <select
                 class="custom-select"
                 ng-model="filterValue"
-                ng-change="onChangeFilter()"
+                ng-change="onChange()"
               >
                 <option
                   ng-repeat="fopt in filterOptions"

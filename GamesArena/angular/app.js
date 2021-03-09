@@ -66,17 +66,19 @@ app.controller("gamesController", function ($scope, gamesFactory) {
 
   $scope.getGames();
 
-  $scope.onChangeSearch = function () {
-    if ($scope.search == "") {
-      $scope.games = $scope.allGames;
-    } else {
-      $scope.games = $scope.allGames.filter((g) =>
-        g.title.toLowerCase().includes($scope.search.toLowerCase())
-      );
-    }
+  $scope.onChange = function () {
+    $scope.onChangeFilter();
+    $scope.onChangeSearch();
+    $scope.onChangeSort();
   };
 
-  $scope.onChangeSort = () => {
+  $scope.onChangeSearch = function () {
+    $scope.games = $scope.games.filter((g) =>
+      g.title.toLowerCase().includes($scope.search.toLowerCase())
+    );
+  };
+
+  $scope.onChangeSort = function () {
     switch ($scope.sortValue) {
       case "2":
         $scope.games = $scope.games.sort((a, b) => {
@@ -91,16 +93,16 @@ app.controller("gamesController", function ($scope, gamesFactory) {
     }
   };
 
-  $scope.onChangeFilter = () => {
-    console.log("s", $scope.filterValue);
+  $scope.onChangeFilter = function () {
     switch ($scope.filterValue) {
       case "1":
       case "2":
+        $scope.games = $scope.allGames;
         break;
       default:
-        $scope.games = $scope.games.filter(
-          (g) => g.platform == $scope.filterValue
-        );
+        $scope.games = $scope.allGames.filter(function (g) {
+          return g.platform == $scope.filterValue;
+        });
 
         break;
     }
