@@ -15,10 +15,11 @@ app.factory("gamesFactory", function ($http) {
   return factory;
 });
 
-app.controller("gamesController", function ($scope, gamesFactory) {
+app.controller("gamesController", function ($scope, gamesFactory, $timeout) {
   $scope.allGames = [];
   $scope.games = [];
   $scope.search = "";
+  $scope.showAutocomplete = false;
 
   $scope.sortValue = "1";
   $scope.sortOptions = [
@@ -106,5 +107,18 @@ app.controller("gamesController", function ($scope, gamesFactory) {
 
         break;
     }
+  };
+
+  $scope.onSelectGame = (g) => {
+    $scope.search = g.title;
+    $scope.games = [g];
+    $scope.showAutocomplete = false;
+  };
+
+  $scope.onFocusSearch = () => ($scope.showAutocomplete = true);
+  $scope.onBlurSearch = function () {
+    $timeout(function () {
+      $scope.showAutocomplete = false;
+    }, 250);
   };
 });

@@ -11,6 +11,7 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     />
+    <link rel="stylesheet" href="styles.css" />
   </head>
 
   <body>
@@ -28,7 +29,20 @@
               aria-describedby="search"
               ng-change="onChange()"
               ng-model="search"
+              ng-focus="onFocusSearch()"
+              ng-blur="onBlurSearch()"
             />
+            <div ng-if="search && showAutocomplete" class="autocomplete">
+              <ul class="list-group">
+                <li
+                  class="list-group-item"
+                  ng-repeat="game in games"
+                  ng-click="onSelectGame(game)"
+                >
+                  {{game.title}}
+                </li>
+              </ul>
+            </div>
             <div class="input-group-append">
               <span class="input-group-text" id="search"
                 ><i class="fas fa-search"></i
