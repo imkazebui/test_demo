@@ -24,7 +24,7 @@
 
     <!-- Please add your JSX code here -->
     <script type="text/babel">
-      const AutoComplete = ({ onChange, options, onSelect }) => {
+      const AutoComplete = ({ onChange, options, onSelect, search }) => {
         return (
           <div class="input-group mb-3">
             <input
@@ -35,15 +35,18 @@
               aria-describedby="search"
               onChange={onChange}
             />
-            <div class="autocomplete">
-              <ul class="list-group">
-                {options.map((opt) => (
-                  <li class="list-group-item" onClick={onSelect(opt)}>
-                    {opt.title}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {!!search && (
+              <div class="autocomplete">
+                <ul class="list-group">
+                  {options.map((opt) => (
+                    <li class="list-group-item" onClick={onSelect(opt)}>
+                      {opt.title}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div class="input-group-append">
               <span class="input-group-text" id="search">
                 <i class="fas fa-search"></i>
@@ -97,14 +100,21 @@
         },
       ];
 
-      const ToolBar = ({ onChange = (f) => f }) => {
+      const ToolBar = ({
+        onChange = (f) => f,
+        onChangeSearch,
+        search,
+        searchOptions,
+        onSelectGame,
+      }) => {
         return (
           <div className="row">
             <div class="col-6">
               <AutoComplete
-                onChange={onChange}
-                onSelect={(f) => f}
-                options={[]}
+                onChange={onChangeSearch}
+                search={search}
+                onSelect={onSelectGame}
+                options={searchOptions}
               />
             </div>
 
@@ -177,11 +187,35 @@
             .catch((err) => console.log("err", err));
         }, []);
 
+        const onChangeSearch = ({ target }) => setSearch(target.value);
+
+        React.useEffect(() => {
+          let newGames = games;
+
+          if (!!search) {
+            newGames = games.filter((g) =>
+              g.title.toLowerCase().includes(search.toLowerCase())
+            );
+          }
+
+          setGames(newGames);
+        }, [search]);
+
+        const onSelectGame = (g) => () => {
+          setSearch(g.title);
+          setGames([g]);
+        };
+
         return (
           <React.Fragment>
             <h1>Game Arena</h1>
 
-            <ToolBar />
+            <ToolBar
+              search={search}
+              searchOptions={games}
+              onChangeSearch={onChangeSearch}
+              onSelectGame={onSelectGame}
+            />
 
             <div className="row">
               {games.map((g, idx) => (
