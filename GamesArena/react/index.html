@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="root" class="container"></div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+
+    <!-- Please add your JSX code here -->
+    <script type="text/babel">
+      const AutoComplete = ({ onChange, options, onSelect }) => {
+        return (
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search a game by using the name of the game"
+              aria-label="Search game"
+              aria-describedby="search"
+              onChange={onChange}
+            />
+            <div class="autocomplete">
+              <ul class="list-group">
+                {options.map((opt) => (
+                  <li class="list-group-item" onClick={onSelect(opt)}>
+                    {opt.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div class="input-group-append">
+              <span class="input-group-text" id="search">
+                <i class="fas fa-search"></i>
+              </span>
+            </div>
+          </div>
+        );
+      };
+
+      const Select = ({ onChange, options }) => {
+        return (
+          <select class="custom-select" onChange={onChange}>
+            {options.map((opt) => (
+              <option value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        );
+      };
+
+      const sortOptions = [
+        {
+          label: "Sort by score",
+          value: 1,
+        },
+        {
+          label: "Asc",
+          value: 2,
+        },
+        {
+          label: "Desc",
+          value: 3,
+        },
+      ];
+
+      const filterOptions = [
+        {
+          label: "Filter by platform",
+          value: 1,
+        },
+        {
+          label: "All",
+          value: 2,
+        },
+        {
+          label: "PlayStation Vita",
+          value: "PlayStation Vita",
+        },
+        {
+          label: "iPad",
+          value: "iPad",
+        },
+      ];
+
+      const ToolBar = ({ onChange = (f) => f }) => {
+        return (
+          <div className="row">
+            <div class="col-6">
+              <AutoComplete
+                onChange={onChange}
+                onSelect={(f) => f}
+                options={[]}
+              />
+            </div>
+
+            <div class="col-6">
+              <div class="row">
+                <div class="col-6">
+                  <Select onChange={onChange} options={sortOptions} />
+                </div>
+                <div class="col-6">
+                  <Select onChange={onChange} options={filterOptions} />
+                </div>
+              </div>
+              <div class="col-6"></div>
+            </div>
+          </div>
+        );
+      };
+
+      const Game = ({ game, key }) => {
+        return (
+          <div key={key} class="col-sm-12 col-md-6 col-lg-4 col-el-3">
+            <div class="card">
+              <img src="" class="card-img-top" />
+              <div class="card-body">
+                <h5 class="card-title">{game.title}</h5>
+
+                <p class="card-tex">
+                  <span>Platform: </span>
+                  {game.platform}
+                </p>
+
+                <p class="card-tex">
+                  <span>Genre: </span>
+                  {game.genre}
+                </p>
+
+                <p class="card-tex">
+                  <span>Score: </span>
+                  {game.score}
+                </p>
+
+                {game.editors_choice === "Y" && (
+                  <p class="card-tex">Editors choice</p>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const GamesArena = () => {
+        const [allGames, setAllGames] = React.useState([]);
+        const [games, setGames] = React.useState([]);
+        const [search, setSearch] = React.useState("");
+
+        React.useEffect(() => {
+          fetch(
+            "https://s3-ap-southeast-1.amazonaws.com/he-public-data/gamesarena274f2bf.json",
+            {
+              mode: "cors",
+            }
+          )
+            .then((res) => res.json())
+            .then((r) => {
+              r.shift();
+
+              setAllGames(r);
+              setGames(r);
+            })
+            .catch((err) => console.log("err", err));
+        }, []);
+
+        return (
+          <React.Fragment>
+            <h1>Game Arena</h1>
+
+            <ToolBar />
+
+            <div className="row">
+              {games.map((g, idx) => (
+                <Game game={g} key={idx} />
+              ))}
+            </div>
+          </React.Fragment>
+        );
+      };
+
+      ReactDOM.render(<GamesArena />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
