@@ -24,7 +24,13 @@
 
     <!-- Please add your JSX code here -->
     <script type="text/babel">
-      const AutoComplete = ({ onChange, options, onSelect, search }) => {
+      const AutoComplete = ({
+        onChange,
+        options,
+        onSelect,
+        search,
+        showAutoComplete,
+      }) => {
         return (
           <div class="input-group mb-3">
             <input
@@ -35,17 +41,16 @@
               aria-describedby="search"
               onChange={onChange}
             />
-            {!!search && (
-              <div class="autocomplete">
-                <ul class="list-group">
-                  {options.map((opt) => (
-                    <li class="list-group-item" onClick={onSelect(opt)}>
-                      {opt.title}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+
+            <div class={`autocomplete ${showAutoComplete ? "active" : ""}`}>
+              <ul class="list-group">
+                {options.map((opt) => (
+                  <li class="list-group-item" onClick={onSelect(opt)}>
+                    {opt.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             <div class="input-group-append">
               <span class="input-group-text" id="search">
@@ -69,26 +74,26 @@
       const sortOptions = [
         {
           label: "Sort by score",
-          value: 1,
+          value: "1",
         },
         {
           label: "Asc",
-          value: 2,
+          value: "2",
         },
         {
           label: "Desc",
-          value: 3,
+          value: "3",
         },
       ];
 
       const filterOptions = [
         {
           label: "Filter by platform",
-          value: 1,
+          value: "1",
         },
         {
           label: "All",
-          value: 2,
+          value: "2",
         },
         {
           label: "PlayStation Vita",
@@ -106,6 +111,8 @@
         search,
         searchOptions,
         onSelectGame,
+        onChangeSelect,
+        showAutoComplete,
       }) => {
         return (
           <div className="row">
@@ -115,16 +122,23 @@
                 search={search}
                 onSelect={onSelectGame}
                 options={searchOptions}
+                showAutoComplete={showAutoComplete}
               />
             </div>
 
             <div class="col-6">
               <div class="row">
                 <div class="col-6">
-                  <Select onChange={onChange} options={sortOptions} />
+                  <Select
+                    onChange={onChangeSelect("sort")}
+                    options={sortOptions}
+                  />
                 </div>
                 <div class="col-6">
-                  <Select onChange={onChange} options={filterOptions} />
+                  <Select
+                    onChange={onChangeSelect("filter")}
+                    options={filterOptions}
+                  />
                 </div>
               </div>
               <div class="col-6"></div>
@@ -169,12 +183,29 @@
         const [allGames, setAllGames] = React.useState([]);
         const [games, setGames] = React.useState([]);
         const [search, setSearch] = React.useState("");
+        const [showAutoComplete, setShowAutoComplete] = React.useState(false);
+        const [sortValue, setSortValue] = React.useState("1");
+        const [filterValue, setFilterValue] = React.useState("1");
+
+        React.useEffect(() => {
+          let el = document.getElementsByClassName("autocomplete")[0];
+
+          const clickOutside = (e) => {
+            if (!el.contains(e.target)) {
+              setShowAutoComplete(false);
+            }
+          };
+
+          document.addEventListener("click", clickOutside);
+
+          return () => document.removeEventListener("click", clickOutside);
+        }, []);
 
         React.useEffect(() => {
           fetch(
             "https://s3-ap-southeast-1.amazonaws.com/he-public-data/gamesarena274f2bf.json",
             {
-              mode: "cors",
+              // mode: "cors",
             }
           )
             .then((res) => res.json())
@@ -187,22 +218,70 @@
             .catch((err) => console.log("err", err));
         }, []);
 
-        const onChangeSearch = ({ target }) => setSearch(target.value);
+        const onChangeSearch = ({ target }) => {
+          setSearch(target.value);
+          setShowAutoComplete(!!target.value);
+        };
+        const onChangeSelect = (type) => ({ target }) => {
+          switch (type) {
+            case "sort":
+              setSortValue(target.value);
+
+              break;
+            case "filter":
+              setFilterValue(target.value);
+
+              break;
+            default:
+              break;
+          }
+        };
 
         React.useEffect(() => {
+          if (allGames.length === 0) {
+            return;
+          }
+
           let newGames = games;
 
+          switch (filterValue) {
+            case "1":
+            case "2":
+              newGames = allGames;
+              break;
+            default:
+              newGames = allGames.filter((g) => g.platform == filterValue);
+
+              break;
+          }
+
           if (!!search) {
-            newGames = games.filter((g) =>
+            newGames = newGames.filter((g) =>
               g.title.toLowerCase().includes(search.toLowerCase())
             );
           }
 
+          const newSort = Array.from(newGames);
+
+          switch (sortValue) {
+            case "2":
+              newSort.sort((a, b) => a.score - b.score);
+              break;
+            case "3":
+              newSort.sort((a, b) => b.score - a.score);
+              break;
+            default:
+              break;
+          }
+
+          newGames = Array.from(newSort);
+
           setGames(newGames);
-        }, [search]);
+        }, [search, sortValue, filterValue]);
 
         const onSelectGame = (g) => () => {
           setSearch(g.title);
+          setShowAutoComplete(false);
           setGames([g]);
         };
 
@@ -213,13 +292,15 @@
             <ToolBar
               search={search}
               searchOptions={games}
+              showAutoComplete={showAutoComplete}
               onChangeSearch={onChangeSearch}
               onSelectGame={onSelectGame}
+              onChangeSelect={onChangeSelect}
             />
 
             <div className="row">
               {games.map((g, idx) => (
-                <Game game={g} key={idx} />
+                <Game game={g} key={g.title + g.platform} />
               ))}
             </div>
           </React.Fragment>
