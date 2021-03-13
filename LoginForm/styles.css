@@ -1,0 +1,17 @@
+.autocomplete {
+  position: absolute;
+  z-index: 9;
+  top: 38px;
+  max-height: 150px;
+  overflow: auto;
+  border: 1px solid red;
+  visibility: hidden;
+}
+
+.autocomplete.active {
+  visibility: visible;
+}
+
+.autocomplete li {
+  cursor: pointer;
+}

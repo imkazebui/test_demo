@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="root" class="container"></div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+
+    <!-- Please add your JSX code here -->
+    <script type="text/babel">
+      const LoginForm = () => {
+        const onSubmit = (e) => {
+          e.preventDefault();
+
+          let el = document.forms["login"];
+        };
+
+        return (
+          <React.Fragment>
+            <form onSubmit={onSubmit} name="login">
+              <div class="row">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="firstName">First name</label>
+                    <input
+                      class="form-control"
+                      id="firstName"
+                      required
+                      pattern="[^0-9]{1,}"
+                    />
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="lastName">Last name</label>
+                    <input
+                      class="form-control"
+                      id="lastName"
+                      required
+                      pattern="[^0-9]{1,}"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col">
+                  <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input
+                      class="form-control"
+                      id="email"
+                      required
+                      type="email"
+                    />
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                      class="form-control"
+                      id="password"
+                      required
+                      type="password"
+                      pattern="[0-9A-Za-z]{8,}"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <button type="submit" class="btn btn-primary">
+                  Claim Your Free Trial
+                </button>
+              </div>
+            </form>
+          </React.Fragment>
+        );
+      };
+
+      ReactDOM.render(<LoginForm />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
